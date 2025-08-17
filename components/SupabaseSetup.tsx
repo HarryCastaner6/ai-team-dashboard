@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import { Database, Copy, Check, ExternalLink, RefreshCw, Users, Zap } from 'lucide-react'
-import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 
 export default function SupabaseSetup() {
   const [isConfigured, setIsConfigured] = useState(false)
@@ -12,7 +11,10 @@ export default function SupabaseSetup() {
   const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
-    setIsConfigured(isSupabaseConfigured())
+    // Check if Supabase is configured (client-side only)
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    setIsConfigured(!!(supabaseUrl && supabaseKey))
   }, [])
 
   const copyToClipboard = (text: string, key: string) => {
@@ -26,12 +28,19 @@ export default function SupabaseSetup() {
     setTestResult(null)
     
     try {
-      if (!isSupabaseConfigured()) {
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+      const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+      
+      if (!supabaseUrl || !supabaseKey) {
         setTestResult('Please add your Supabase credentials first')
         return
       }
 
-      const { data, error } = await supabase
+      // Simple test - just check if we can create a client and make a basic request
+      const { createClient } = await import('@supabase/supabase-js')
+      const client = createClient(supabaseUrl, supabaseKey)
+      
+      const { data, error } = await client
         .from('users')
         .select('count')
         .limit(1)
@@ -232,7 +241,7 @@ SUPABASE_SERVICE_ROLE_KEY=your-service-role-key-here`
           <div className="flex space-x-3">
             <button
               onClick={testConnection}
-              disabled={isLoading || !isSupabaseConfigured()}
+              disabled={isLoading || !isConfigured}
               className="flex items-center space-x-1 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
             >
               {isLoading ? <RefreshCw className="animate-spin" size={16} /> : <Database size={16} />}
