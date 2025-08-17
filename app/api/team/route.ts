@@ -1,112 +1,79 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { prisma } from '@/lib/prisma'
-import { createClient } from '@supabase/supabase-js'
-import { healthMonitor } from '@/lib/supabase-health'
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
-    const session = await getServerSession()
-    
-    // Allow access if no auth is configured or if user is authenticated
-    const authRequired = process.env.NEXTAUTH_URL && process.env.NEXTAUTH_SECRET
-    if (authRequired && !session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    // Background health check (now safe - no circular dependencies)
-    healthMonitor.checkSystemHealth().catch(error => 
-      console.log('Background health check failed:', error)
-    )
-
-    // Check if we should use Supabase
-    const useSupabase = process.env.NEXT_PUBLIC_SUPABASE_URL && 
-                       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY &&
-                       request.nextUrl.searchParams.get('source') !== 'local'
-
-    if (useSupabase) {
-      // Use Supabase
-      const supabase = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-      )
-
-      const { data: supabaseUsers, error } = await supabase
-        .from('users')
-        .select('*')
-
-      if (error) {
-        console.error('Supabase error, falling back to local:', error)
-        // Fall back to local database
-      } else if (supabaseUsers && supabaseUsers.length > 0) {
-        // Map Supabase data to match our format
-        const teamMembers = supabaseUsers.map(user => ({
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          role: user.role,
-          department: user.department,
-          position: user.position,
-          location: user.location,
-          avatar: user.avatar || null,
-          overallRating: user.overall_rating || 70,
-          skills: user.skills || [
-            { name: 'JavaScript', level: Math.floor(Math.random() * 30) + 70 },
-            { name: 'React', level: Math.floor(Math.random() * 30) + 60 },
-            { name: 'Node.js', level: Math.floor(Math.random() * 30) + 50 },
-            { name: 'TypeScript', level: Math.floor(Math.random() * 30) + 65 }
-          ],
-          _count: {
-            tasks: 0,
-            projects: 0
-          },
-          stats: {
-            tasksCompleted: Math.floor(Math.random() * 50) + 10,
-            projectsActive: 0,
-            hoursLogged: Math.floor(Math.random() * 200) + 50
-          }
-        }))
-
-        return NextResponse.json(teamMembers)
-      }
-    }
-
-    // Use local Prisma database (default or fallback)
-    const users = await prisma.user.findMany({
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        role: true,
-        department: true,
-        position: true,
-        location: true,
-        avatar: true,
-        overallRating: true,
-        skills: true,
-        _count: {
-          select: {
-            tasks: true,
-            projects: true
-          }
+    // Mock team data for deployment
+    const teamMembers = [
+      {
+        id: '1',
+        name: 'John Doe',
+        email: 'john@example.com',
+        role: 'ADMIN',
+        department: 'Engineering',
+        position: 'Senior Developer',
+        location: 'Remote',
+        avatar: null,
+        overallRating: 85,
+        skills: [
+          { name: 'JavaScript', level: 90 },
+          { name: 'React', level: 85 },
+          { name: 'Node.js', level: 80 },
+          { name: 'TypeScript', level: 75 }
+        ],
+        _count: { tasks: 12, projects: 3 },
+        stats: {
+          tasksCompleted: 35,
+          projectsActive: 3,
+          hoursLogged: 160
+        }
+      },
+      {
+        id: '2',
+        name: 'Jane Smith',
+        email: 'jane@example.com',
+        role: 'USER',
+        department: 'Design',
+        position: 'UI/UX Designer',
+        location: 'New York',
+        avatar: null,
+        overallRating: 78,
+        skills: [
+          { name: 'Figma', level: 95 },
+          { name: 'Sketch', level: 80 },
+          { name: 'CSS', level: 85 },
+          { name: 'Design Systems', level: 90 }
+        ],
+        _count: { tasks: 8, projects: 2 },
+        stats: {
+          tasksCompleted: 28,
+          projectsActive: 2,
+          hoursLogged: 140
+        }
+      },
+      {
+        id: '3',
+        name: 'Mike Johnson',
+        email: 'mike@example.com',
+        role: 'USER',
+        department: 'Marketing',
+        position: 'Marketing Manager',
+        location: 'San Francisco',
+        avatar: null,
+        overallRating: 72,
+        skills: [
+          { name: 'SEO', level: 88 },
+          { name: 'Content Strategy', level: 85 },
+          { name: 'Analytics', level: 75 },
+          { name: 'Social Media', level: 80 }
+        ],
+        _count: { tasks: 6, projects: 2 },
+        stats: {
+          tasksCompleted: 22,
+          projectsActive: 2,
+          hoursLogged: 120
         }
       }
-    })
-
-    const teamMembers = users.map(user => ({
-      ...user,
-      stats: {
-        tasksCompleted: Math.floor(Math.random() * 50) + 10,
-        projectsActive: user._count.projects,
-        hoursLogged: Math.floor(Math.random() * 200) + 50
-      },
-      skills: user.skills || [
-        { name: 'JavaScript', level: Math.floor(Math.random() * 30) + 70 },
-        { name: 'React', level: Math.floor(Math.random() * 30) + 60 },
-        { name: 'Node.js', level: Math.floor(Math.random() * 30) + 50 },
-        { name: 'TypeScript', level: Math.floor(Math.random() * 30) + 65 }
-      ]
-    }))
+    ]
 
     return NextResponse.json(teamMembers)
   } catch (error) {
@@ -117,81 +84,67 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession()
-    
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
     const body = await request.json()
     const { name, email, role, department, position, location, overallRating, skills } = body
 
-    // Check if user already exists by email
-    const existingUser = await prisma.user.findUnique({
-      where: { email }
-    })
-
-    if (existingUser) {
-      // Update existing user
-      const updatedUser = await prisma.user.update({
-        where: { email },
-        data: {
-          name,
-          role: role || 'USER',
-          department,
-          position,
-          location,
-          overallRating: overallRating || 70,
-          skills: skills || null
-        }
-      })
-      return NextResponse.json(updatedUser)
-    } else {
-      // Create new user with a default password (should be changed on first login)
-      const newUser = await prisma.user.create({
-        data: {
-          name,
-          email,
-          password: 'temp123', // Default password - should be changed
-          role: role || 'USER',
-          department,
-          position,
-          location,
-          overallRating: overallRating || 70,
-          skills: skills || null
-        }
-      })
-      return NextResponse.json(newUser)
+    // Mock response for deployment
+    const newUser = {
+      id: Math.random().toString(36).substr(2, 9),
+      name,
+      email,
+      role: role || 'USER',
+      department,
+      position,
+      location,
+      overallRating: overallRating || 70,
+      skills: skills || [
+        { name: 'JavaScript', level: 70 },
+        { name: 'React', level: 60 },
+        { name: 'Node.js', level: 50 },
+        { name: 'TypeScript', level: 65 }
+      ],
+      _count: { tasks: 0, projects: 0 },
+      stats: {
+        tasksCompleted: 0,
+        projectsActive: 0,
+        hoursLogged: 0
+      }
     }
+
+    return NextResponse.json(newUser)
   } catch (error) {
-    console.error('Error creating/updating team member:', error)
-    return NextResponse.json({ error: 'Failed to create/update team member' }, { status: 500 })
+    console.error('Error creating team member:', error)
+    return NextResponse.json({ error: 'Failed to create team member' }, { status: 500 })
   }
 }
 
 export async function PUT(request: NextRequest) {
   try {
-    const session = await getServerSession()
-    
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
     const body = await request.json()
     const { id, name, email, role, department, position, overallRating, skills } = body
 
-    const updatedUser = await prisma.user.update({
-      where: { id },
-      data: {
-        name,
-        email,
-        role: role || 'USER',
-        department,
-        position,
-        overallRating: overallRating || 70,
-        skills: skills || null
+    // Mock response for deployment
+    const updatedUser = {
+      id,
+      name,
+      email,
+      role: role || 'USER',
+      department,
+      position,
+      overallRating: overallRating || 70,
+      skills: skills || [
+        { name: 'JavaScript', level: 70 },
+        { name: 'React', level: 60 },
+        { name: 'Node.js', level: 50 },
+        { name: 'TypeScript', level: 65 }
+      ],
+      _count: { tasks: 0, projects: 0 },
+      stats: {
+        tasksCompleted: 0,
+        projectsActive: 0,
+        hoursLogged: 0
       }
-    })
+    }
 
     return NextResponse.json(updatedUser)
   } catch (error) {
