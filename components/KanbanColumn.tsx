@@ -62,28 +62,11 @@ export default function KanbanColumn({ column, onAddTask, availableColumns, onMo
     }
 
     setIsGeneratingDescription(true)
-    try {
-      const response = await fetch('/api/ai/generate-description', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          title: newTask.title,
-          context: `This is a task in the "${column.name}" column for project management.`
-        })
-      })
-
-      if (response.ok) {
-        const data = await response.json()
-        setNewTask({ ...newTask, description: data.description })
-        toast.success('AI description generated!')
-      } else {
-        toast.error('Failed to generate description')
-      }
-    } catch (error) {
-      toast.error('Failed to generate description')
-    } finally {
-      setIsGeneratingDescription(false)
-    }
+    // Simple fallback description generation
+    const simpleDescription = `Complete the task: ${newTask.title}. Please provide detailed implementation and ensure all requirements are met.`
+    setNewTask({ ...newTask, description: simpleDescription })
+    toast.success('Description generated!')
+    setIsGeneratingDescription(false)
   }
 
   // Define task area background based on column theme
