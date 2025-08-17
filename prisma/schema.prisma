@@ -1,0 +1,177 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  IN_REVIEW
+  DONE
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+model User {
+  id            String         @id @default(cuid())
+  email         String         @unique
+  password      String
+  name          String
+  role          Role           @default(USER)
+  avatar        String?
+  department    String?
+  position      String?
+  location      String?
+  overallRating Int            @default(70)
+  skills        Json?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  
+  boards        Board[]
+  boardAccess   BoardAccess[]
+  tasks         Task[]
+  assignedTasks TaskAssignee[]
+  messages      Message[]
+  projects      ProjectMember[]
+  
+  @@map("users")
+}
+
+model Board {
+  id          String         @id @default(cuid())
+  name        String
+  description String?
+  ownerId     String
+  isPublic    Boolean        @default(false)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  
+  owner       User           @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  columns     Column[]
+  boardAccess BoardAccess[]
+  
+  @@map("boards")
+}
+
+model BoardAccess {
+  id        String   @id @default(cuid())
+  boardId   String
+  userId    String
+  canEdit   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  
+  board     Board    @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([boardId, userId])
+  @@map("board_access")
+}
+
+model Column {
+  id       String @id @default(cuid())
+  boardId  String
+  name     String
+  position Int
+  color    String @default("#6366f1")
+  
+  board    Board  @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  tasks    Task[]
+  
+  @@map("columns")
+}
+
+model Task {
+  id          String         @id @default(cuid())
+  title       String
+  description String?
+  columnId    String
+  creatorId   String
+  position    Int
+  status      TaskStatus     @default(TODO)
+  priority    Priority       @default(MEDIUM)
+  dueDate     DateTime?
+  tags        String[]
+  attachments Json?
+  completedAt DateTime?
+  archivedAt  DateTime?
+  isArchived  Boolean        @default(false)
+  todoAddedAt DateTime?      // When task was added to To Do column
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  
+  column      Column         @relation(fields: [columnId], references: [id], onDelete: Cascade)
+  creator     User           @relation(fields: [creatorId], references: [id])
+  assignees   TaskAssignee[]
+  
+  @@map("tasks")
+}
+
+model TaskAssignee {
+  id       String @id @default(cuid())
+  taskId   String
+  userId   String
+  
+  task     Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([taskId, userId])
+  @@map("task_assignees")
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  content   String
+  userId    String
+  role      String   @default("user")
+  model     String?
+  createdAt DateTime @default(now())
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("messages")
+}
+
+model Project {
+  id          String          @id @default(cuid())
+  name        String
+  description String?
+  startDate   DateTime
+  endDate     DateTime?
+  status      String          @default("PLANNING")
+  breakdown   Json?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  
+  members     ProjectMember[]
+  
+  @@map("projects")
+}
+
+model ProjectMember {
+  id           String   @id @default(cuid())
+  projectId    String
+  userId       String
+  role         String
+  tasks        Json?
+  timeEstimate Int?
+  
+  project      Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([projectId, userId])
+  @@map("project_members")
+}
