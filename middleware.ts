@@ -6,7 +6,7 @@ export async function middleware(request: NextRequest) {
   try {
     const token = await getToken({ 
       req: request,
-      secret: process.env.NEXTAUTH_SECRET || 'fallback-secret-for-development-only-change-in-production'
+      secret: process.env.NEXTAUTH_SECRET || 'ai-team-dashboard-secret-2024-production-nextauth-jwt-signing-key-secure'
     })
     const isAuthPage = request.nextUrl.pathname.startsWith('/login') || 
                        request.nextUrl.pathname.startsWith('/register')

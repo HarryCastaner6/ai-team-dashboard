@@ -9,7 +9,7 @@ const nextConfig = {
   },
   env: {
     NEXTAUTH_URL: process.env.NEXTAUTH_URL || 'http://localhost:3000',
-    NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET || 'fallback-secret-for-development-only-change-in-production',
+    NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET || 'ai-team-dashboard-secret-2024-production-nextauth-jwt-signing-key-secure',
   },
 }
 
