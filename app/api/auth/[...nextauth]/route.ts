@@ -42,27 +42,32 @@ const handler = NextAuth({
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
+        try {
+          if (!credentials?.email || !credentials?.password) {
+            return null
+          }
+
+          // Find user in mock data
+          const user = mockUsers.find(u => u.email === credentials.email)
+
+          if (!user) {
+            return null
+          }
+
+          // Simple password check (in production, use proper hashing)
+          if (credentials.password !== user.password) {
+            return null
+          }
+
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            role: user.role
+          }
+        } catch (error) {
+          console.error('Auth error:', error)
           return null
-        }
-
-        // Find user in mock data
-        const user = mockUsers.find(u => u.email === credentials.email)
-
-        if (!user) {
-          return null
-        }
-
-        // Simple password check (in production, use proper hashing)
-        if (credentials.password !== user.password) {
-          return null
-        }
-
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          role: user.role
         }
       }
     })
@@ -89,7 +94,8 @@ const handler = NextAuth({
   session: {
     strategy: 'jwt'
   },
-  secret: process.env.NEXTAUTH_SECRET
+  secret: process.env.NEXTAUTH_SECRET || 'fallback-secret-for-development-only-change-in-production',
+  debug: process.env.NODE_ENV === 'development'
 })
 
 export { handler as GET, handler as POST }
