@@ -29,7 +29,14 @@ export default function LoginPage() {
         toast.error('Invalid credentials')
       } else {
         toast.success('Login successful!')
-        router.push('/dashboard')
+        // Add a small delay to ensure the session is properly set
+        setTimeout(() => {
+          router.push('/dashboard')
+          // Force page reload if needed
+          if (typeof window !== 'undefined') {
+            window.location.href = '/dashboard'
+          }
+        }, 500)
       }
     } catch (error) {
       toast.error('An error occurred')
