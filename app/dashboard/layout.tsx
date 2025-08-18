@@ -10,16 +10,16 @@ export default function DashboardLayout({
     <div style={{ 
       display: 'flex', 
       height: '100vh', 
-      background: '#1a1a1a'
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
     }}>
       <Sidebar />
       <main style={{ 
         flex: 1, 
-        marginLeft: '288px', // 72 * 4 = 288px (w-72)
+        marginLeft: '320px', // Updated to match new sidebar width
         overflowY: 'auto',
-        background: '#1a1a1a'
+        background: 'transparent'
       }}>
-        <div className="container" style={{ padding: '30px' }}>
+        <div style={{ padding: '0' }}>
           {children}
         </div>
       </main>

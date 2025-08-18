@@ -51,40 +51,84 @@ export default function LoginPage() {
       display: 'flex', 
       alignItems: 'center', 
       justifyContent: 'center',
-      background: '#1a1a1a',
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
       position: 'relative',
       overflow: 'hidden'
     }}>
-      <div className="header-background"></div>
+      {/* Animated Background Elements */}
+      <div style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        background: 'radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(255, 118, 117, 0.3) 0%, transparent 50%), radial-gradient(circle at 40% 80%, rgba(255, 200, 87, 0.3) 0%, transparent 50%)',
+        animation: 'float 20s ease-in-out infinite',
+        zIndex: 0
+      }} />
       
-      <div className="modal-content" style={{ 
+      <div style={{ 
         position: 'relative', 
         zIndex: 10, 
         width: '100%', 
-        maxWidth: '400px',
-        margin: '0'
+        maxWidth: '450px',
+        margin: '0',
+        background: 'rgba(255, 255, 255, 0.1)',
+        backdropFilter: 'blur(20px)',
+        borderRadius: '24px',
+        padding: '40px',
+        border: '1px solid rgba(255, 255, 255, 0.2)',
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+        animation: 'slideInDown 0.8s ease-out'
       }}>
-        <div className="modal-header">
-          <div style={{ textAlign: 'center', width: '100%' }}>
-            <div className="avatar" style={{ margin: '0 auto 15px' }}>
-              <span style={{ fontSize: '24px' }}>⚡</span>
-            </div>
-            <h2>Welcome Back</h2>
-            <p style={{ opacity: 0.9, fontSize: '0.9rem', marginTop: '5px' }}>
-              Sign in to your productivity suite
-            </p>
+        <div style={{ textAlign: 'center', width: '100%', marginBottom: '32px' }}>
+          <div style={{ 
+            margin: '0 auto 20px',
+            background: 'linear-gradient(135deg, #ff6b6b, #4ecdc4)',
+            borderRadius: '20px',
+            padding: '20px',
+            width: '80px',
+            height: '80px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            animation: 'pulse 2s infinite',
+            boxShadow: '0 8px 16px rgba(255, 107, 107, 0.3)'
+          }}>
+            <span style={{ fontSize: '32px' }}>⚡</span>
           </div>
+          <h2 style={{
+            fontSize: '2.5rem',
+            fontWeight: '700',
+            background: 'linear-gradient(135deg, #ffffff, #f0f0f0)',
+            backgroundClip: 'text',
+            WebkitBackgroundClip: 'text',
+            color: 'transparent',
+            margin: 0,
+            textShadow: '2px 2px 4px rgba(0,0,0,0.1)',
+            marginBottom: '12px'
+          }}>Welcome Back</h2>
+          <p style={{ 
+            opacity: 0.9, 
+            fontSize: '1.1rem', 
+            marginTop: '5px',
+            color: 'rgba(255, 255, 255, 0.8)',
+            fontWeight: '300'
+          }}>
+            Sign in to your AI-powered productivity suite ✨
+          </p>
         </div>
 
-        <div className="modal-body">
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            <div>
+        <div>
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            <div style={{ animation: 'slideInLeft 0.8s ease-out 0.2s both' }}>
               <label style={{ 
                 display: 'block', 
-                fontSize: '0.9rem', 
+                fontSize: '1rem', 
                 fontWeight: 600, 
-                color: '#fbbf24', 
-                marginBottom: '8px' 
+                color: 'rgba(255, 255, 255, 0.9)', 
+                marginBottom: '12px',
+                textShadow: '1px 1px 2px rgba(0,0,0,0.3)'
               }}>
                 Email
               </label>
@@ -93,27 +137,39 @@ export default function LoginPage() {
                 required
                 style={{
                   width: '100%',
-                  padding: '12px 15px',
-                  background: '#333333',
-                  border: '1px solid #404040',
-                  borderRadius: '10px',
+                  padding: '16px 20px',
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  backdropFilter: 'blur(10px)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  borderRadius: '16px',
                   color: 'white',
-                  fontSize: '0.9rem'
+                  fontSize: '1rem',
+                  transition: 'all 0.3s ease',
+                  boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1)'
                 }}
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                onFocus={(e) => e.target.style.borderColor = '#667eea'}
-                onBlur={(e) => e.target.style.borderColor = '#404040'}
+                onFocus={(e) => {
+                  e.target.style.borderColor = 'rgba(255, 255, 255, 0.4)'
+                  e.target.style.transform = 'translateY(-2px)'
+                  e.target.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.2)'
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = 'rgba(255, 255, 255, 0.2)'
+                  e.target.style.transform = 'translateY(0)'
+                  e.target.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.1)'
+                }}
               />
             </div>
 
-            <div>
+            <div style={{ animation: 'slideInRight 0.8s ease-out 0.4s both' }}>
               <label style={{ 
                 display: 'block', 
-                fontSize: '0.9rem', 
+                fontSize: '1rem', 
                 fontWeight: 600, 
-                color: '#fbbf24', 
-                marginBottom: '8px' 
+                color: 'rgba(255, 255, 255, 0.9)', 
+                marginBottom: '12px',
+                textShadow: '1px 1px 2px rgba(0,0,0,0.3)'
               }}>
                 Password
               </label>
@@ -122,31 +178,61 @@ export default function LoginPage() {
                 required
                 style={{
                   width: '100%',
-                  padding: '12px 15px',
-                  background: '#333333',
-                  border: '1px solid #404040',
-                  borderRadius: '10px',
+                  padding: '16px 20px',
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  backdropFilter: 'blur(10px)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  borderRadius: '16px',
                   color: 'white',
-                  fontSize: '0.9rem'
+                  fontSize: '1rem',
+                  transition: 'all 0.3s ease',
+                  boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1)'
                 }}
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                onFocus={(e) => e.target.style.borderColor = '#667eea'}
-                onBlur={(e) => e.target.style.borderColor = '#404040'}
+                onFocus={(e) => {
+                  e.target.style.borderColor = 'rgba(255, 255, 255, 0.4)'
+                  e.target.style.transform = 'translateY(-2px)'
+                  e.target.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.2)'
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = 'rgba(255, 255, 255, 0.2)'
+                  e.target.style.transform = 'translateY(0)'
+                  e.target.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.1)'
+                }}
               />
             </div>
 
             <button
               type="submit"
               disabled={isLoading}
-              className="nav-btn"
               style={{
                 width: '100%',
-                padding: '15px',
-                fontSize: '1rem',
-                marginTop: '10px',
-                opacity: isLoading ? 0.5 : 1,
-                cursor: isLoading ? 'not-allowed' : 'pointer'
+                padding: '18px',
+                fontSize: '1.1rem',
+                fontWeight: '600',
+                marginTop: '16px',
+                background: isLoading ? 'rgba(255, 255, 255, 0.1)' : 'linear-gradient(135deg, #ff6b6b, #4ecdc4)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                borderRadius: '16px',
+                color: 'white',
+                cursor: isLoading ? 'not-allowed' : 'pointer',
+                transition: 'all 0.3s ease',
+                boxShadow: '0 8px 16px rgba(255, 107, 107, 0.3)',
+                animation: 'slideInUp 0.8s ease-out 0.6s both',
+                textShadow: '1px 1px 2px rgba(0,0,0,0.3)'
+              }}
+              onMouseEnter={(e) => {
+                if (!isLoading) {
+                  e.currentTarget.style.transform = 'translateY(-2px) scale(1.02)'
+                  e.currentTarget.style.boxShadow = '0 12px 24px rgba(255, 107, 107, 0.4)'
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!isLoading) {
+                  e.currentTarget.style.transform = 'translateY(0) scale(1)'
+                  e.currentTarget.style.boxShadow = '0 8px 16px rgba(255, 107, 107, 0.3)'
+                }
               }}
             >
               {isLoading ? (
@@ -162,15 +248,27 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <div style={{ marginTop: '30px', textAlign: 'center' }}>
-            <p style={{ opacity: 0.8 }}>
+          <div style={{ 
+            marginTop: '32px', 
+            textAlign: 'center',
+            animation: 'fadeInUp 0.8s ease-out 0.8s both'
+          }}>
+            <p style={{ 
+              opacity: 0.9,
+              color: 'rgba(255, 255, 255, 0.8)',
+              fontSize: '1rem'
+            }}>
               Don't have an account?{' '}
               <Link 
                 href="/register" 
                 style={{ 
-                  color: '#fbbf24', 
+                  color: '#ffffff', 
                   textDecoration: 'none',
-                  fontWeight: 600
+                  fontWeight: 600,
+                  background: 'linear-gradient(135deg, #ff6b6b, #4ecdc4)',
+                  backgroundClip: 'text',
+                  WebkitBackgroundClip: 'text',
+                  transition: 'all 0.3s ease'
                 }}
               >
                 Sign up
@@ -179,6 +277,96 @@ export default function LoginPage() {
           </div>
         </div>
       </div>
+
+      {/* Add CSS Animations */}
+      <style jsx>{`
+        @keyframes slideInDown {
+          from {
+            opacity: 0;
+            transform: translateY(-30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes slideInUp {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes slideInLeft {
+          from {
+            opacity: 0;
+            transform: translateX(-30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+
+        @keyframes slideInRight {
+          from {
+            opacity: 0;
+            transform: translateX(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes pulse {
+          0%, 100% {
+            opacity: 1;
+            transform: scale(1);
+          }
+          50% {
+            opacity: 0.8;
+            transform: scale(1.05);
+          }
+        }
+
+        @keyframes float {
+          0%, 100% {
+            transform: translate(0, 0) rotate(0deg);
+          }
+          33% {
+            transform: translate(30px, -30px) rotate(120deg);
+          }
+          66% {
+            transform: translate(-20px, 20px) rotate(240deg);
+          }
+        }
+
+        @keyframes spin {
+          from {
+            transform: rotate(0deg);
+          }
+          to {
+            transform: rotate(360deg);
+          }
+        }
+      `}</style>
     </div>
   )
 }
