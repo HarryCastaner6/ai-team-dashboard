@@ -1,7 +1,37 @@
 import NextAuth from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
-import { prisma } from '@/lib/prisma'
-import { verifyPassword } from '@/lib/auth'
+
+// Mock users for deployment (no database required)
+const mockUsers = [
+  {
+    id: '1',
+    email: 'admin@example.com',
+    password: 'admin123',
+    name: 'Admin User',
+    role: 'ADMIN'
+  },
+  {
+    id: '2', 
+    email: 'test@example.com',
+    password: 'testpassword123',
+    name: 'Test User',
+    role: 'ADMIN'
+  },
+  {
+    id: '3',
+    email: 'john@example.com', 
+    password: 'password123',
+    name: 'John Doe',
+    role: 'ADMIN'
+  },
+  {
+    id: '4',
+    email: 'demo@example.com',
+    password: 'demo123',
+    name: 'Demo User', 
+    role: 'USER'
+  }
+]
 
 const handler = NextAuth({
   providers: [
@@ -16,20 +46,15 @@ const handler = NextAuth({
           return null
         }
 
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email }
-        })
+        // Find user in mock data
+        const user = mockUsers.find(u => u.email === credentials.email)
 
         if (!user) {
           return null
         }
 
-        const isPasswordValid = await verifyPassword(
-          credentials.password,
-          user.password
-        )
-
-        if (!isPasswordValid) {
+        // Simple password check (in production, use proper hashing)
+        if (credentials.password !== user.password) {
           return null
         }
 

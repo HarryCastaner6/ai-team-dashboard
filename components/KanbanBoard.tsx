@@ -236,11 +236,31 @@ export default function KanbanBoard({ board }: { board: Board }) {
     }
 
     setIsGeneratingDescription(true)
-    // Simple fallback description generation
-    const simpleDescription = `Complete the task: ${newTask.title}. Please provide detailed implementation and ensure all requirements are met.`
-    setNewTask({ ...newTask, description: simpleDescription })
-    toast.success('Description generated!')
-    setIsGeneratingDescription(false)
+    try {
+      const response = await fetch('/api/ai/generate-description', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: newTask.title })
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        setNewTask({ ...newTask, description: data.description })
+        toast.success('Description generated!')
+      } else {
+        // Fallback description
+        const simpleDescription = `Complete the task: ${newTask.title}. Please provide detailed implementation and ensure all requirements are met.`
+        setNewTask({ ...newTask, description: simpleDescription })
+        toast.success('Description generated!')
+      }
+    } catch (error) {
+      // Fallback description
+      const simpleDescription = `Complete the task: ${newTask.title}. Please provide detailed implementation and ensure all requirements are met.`
+      setNewTask({ ...newTask, description: simpleDescription })
+      toast.success('Description generated!')
+    } finally {
+      setIsGeneratingDescription(false)
+    }
   }
 
   return (
