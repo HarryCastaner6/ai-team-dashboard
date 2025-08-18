@@ -1,6 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 import { 
   Users, 
   FolderOpen, 
@@ -65,6 +67,8 @@ interface DashboardStats {
 }
 
 export default function DashboardPage() {
+  const { data: session, status } = useSession()
+  const router = useRouter()
   const [stats, setStats] = useState<DashboardStats>({
     totalUsers: 0,
     activeProjects: 0,
@@ -82,6 +86,15 @@ export default function DashboardPage() {
     recentActivity: []
   })
   const [loading, setLoading] = useState(true)
+
+  // Client-side auth check
+  useEffect(() => {
+    console.log('Dashboard - Session status:', status, 'Session:', !!session)
+    if (status === 'unauthenticated') {
+      console.log('Not authenticated, redirecting to login')
+      router.push('/login')
+    }
+  }, [status, session, router])
 
   useEffect(() => {
     fetchDashboardData()
@@ -197,6 +210,26 @@ export default function DashboardPage() {
         position: 'top' as const,
       }
     }
+  }
+
+  // Show loading while checking authentication
+  if (status === 'loading') {
+    return (
+      <div className="loading-placeholder">
+        <i>⟳</i>
+        <p>Checking authentication...</p>
+      </div>
+    )
+  }
+
+  // Redirect to login if not authenticated
+  if (status === 'unauthenticated') {
+    return (
+      <div className="loading-placeholder">
+        <i>⟳</i>
+        <p>Redirecting to login...</p>
+      </div>
+    )
   }
 
   if (loading) {
